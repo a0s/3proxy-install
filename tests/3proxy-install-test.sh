@@ -151,7 +151,8 @@ test_installation() {
 
 	log_verbose "Running installation with automated answers"
 	# Use timestamp + PID + random number for maximum uniqueness
-	local test_user="testuser_$(date +%s)_$$_${RANDOM}_${RANDOM}"
+	local test_user
+	test_user="testuser_$(date +%s)_$$_${RANDOM}_${RANDOM}"
 	local server_ip
 	server_ip=$(ip -4 addr | sed -ne 's|^.* inet \([^/]*\)/.* scope global.*$|\1|p' | awk '{print $1}' | head -1)
 	if [[ -z "$server_ip" ]]; then
@@ -208,7 +209,8 @@ test_installation() {
 
 test_menu_add_user() {
 	# Use timestamp + random number for more uniqueness
-	local test_user="testuser_$(date +%s)_$$_$RANDOM"
+	local test_user
+	test_user="testuser_$(date +%s)_$$_$RANDOM"
 
 	log_verbose "Testing menu: Add user ($test_user)"
 	if ! printf '%s\n' "1" "$test_user" "1" | sudo bash "$INSTALL_SCRIPT"; then
