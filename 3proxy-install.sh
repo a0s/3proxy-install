@@ -398,6 +398,7 @@ EOF
 
 function loadParams() {
 	if [ -f "${PROXY3_PARAMS}" ]; then
+		# shellcheck source=/etc/3proxy/params
 		source "${PROXY3_PARAMS}"
 	else
 		echo "Parameters file not found: ${PROXY3_PARAMS}"
@@ -605,4 +606,3 @@ if [[ -e ${PROXY3_PARAMS} ]]; then
 else
 	install3proxy
 fi
-
