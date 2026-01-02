@@ -4,6 +4,8 @@
 
 **This project is a bash script that aims to setup a [3proxy](https://github.com/z3apa3a/3proxy) proxy server on a Linux server, as easily as possible!**
 
+This project was inspired by [openvpn-install](https://github.com/angristan/openvpn-install) and [wireguard-install](https://github.com/angristan/wireguard-install)
+
 3proxy is a tiny free proxy server that supports HTTP, HTTPS, SOCKS4, and SOCKS5 protocols. This installer script helps you quickly set up a secure 3proxy server with user authentication.
 
 Please check the [issues](https://github.com/a0s/3proxy-install/issues) for ongoing development, bugs and planned features!
