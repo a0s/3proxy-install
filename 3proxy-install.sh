@@ -40,6 +40,14 @@ function checkVirt() {
 	fi
 }
 
+function checkIptables() {
+	if command -v iptables &>/dev/null; then
+		IPTABLES_AVAILABLE=true
+	else
+		IPTABLES_AVAILABLE=false
+	fi
+}
+
 function checkOS() {
 	source /etc/os-release
 	OS="${ID}"
@@ -259,6 +267,8 @@ function installQuestions() {
 function install3proxy() {
 	installQuestions
 
+	checkIptables
+
 	echo ""
 	echo "Installing build dependencies..."
 	if [[ ${OS} == 'ubuntu' ]] || [[ ${OS} == 'debian' ]]; then
@@ -368,7 +378,29 @@ EOF
 }
 
 function generateService() {
-	cat >"${PROXY3_SERVICE}" <<EOF
+	if [[ "${IPTABLES_AVAILABLE}" == "true" ]]; then
+		cat >"${PROXY3_SERVICE}" <<EOF
+[Unit]
+Description=3proxy proxy server
+Documentation=man:3proxy(1)
+After=network.target
+
+[Service]
+ExecStartPre=/bin/bash -c 'iptables -C INPUT -p tcp --dport ${HTTP_PORT} -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport ${HTTP_PORT} -j ACCEPT'
+ExecStartPre=/bin/bash -c 'iptables -C INPUT -p tcp --dport ${SOCKS_PORT} -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport ${SOCKS_PORT} -j ACCEPT'
+ExecStart=${PROXY3_BINARY} ${PROXY3_CONFIG}
+ExecStopPost=/bin/bash -c 'iptables -D INPUT -p tcp --dport ${HTTP_PORT} -j ACCEPT 2>/dev/null || true'
+ExecStopPost=/bin/bash -c 'iptables -D INPUT -p tcp --dport ${SOCKS_PORT} -j ACCEPT 2>/dev/null || true'
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+LimitNPROC=32768
+
+[Install]
+WantedBy=multi-user.target
+EOF
+	else
+		cat >"${PROXY3_SERVICE}" <<EOF
 [Unit]
 Description=3proxy proxy server
 Documentation=man:3proxy(1)
@@ -384,6 +416,7 @@ LimitNPROC=32768
 [Install]
 WantedBy=multi-user.target
 EOF
+	fi
 }
 
 function saveParams() {
@@ -393,6 +426,7 @@ HTTP_PORT=${HTTP_PORT}
 SOCKS_PORT=${SOCKS_PORT}
 DNS1=${DNS1}
 DNS2=${DNS2}
+IPTABLES_AVAILABLE=${IPTABLES_AVAILABLE}
 EOF
 }
 
@@ -400,6 +434,12 @@ function loadParams() {
 	if [ -f "${PROXY3_PARAMS}" ]; then
 		# shellcheck source=/etc/3proxy/params
 		source "${PROXY3_PARAMS}"
+		# If IPTABLES_AVAILABLE is not set (old installations), detect it
+		if [[ -z "${IPTABLES_AVAILABLE}" ]]; then
+			checkIptables
+			# Update params file with detected value
+			saveParams
+		fi
 	else
 		echo "Parameters file not found: ${PROXY3_PARAMS}"
 		exit 1
