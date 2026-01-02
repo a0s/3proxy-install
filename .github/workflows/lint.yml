@@ -3,26 +3,28 @@ on: [push, pull_request, pull_request_target]
 name: Lint
 
 jobs:
-  # shellcheck:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: shellcheck
-  #       uses: ludeeus/action-shellcheck@1.1.0
-  #       env:
-  #         SHELLCHECK_OPTS: -e SC1091,SC1117,SC2001,SC2034
-
   shellcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install ShellCheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-      - name: Run ShellCheck explicitly
-        run: |
-          shellcheck -e SC1091,SC1117,SC2001,SC2034 3proxy-install.sh tests/3proxy-install-test.sh
+      - name: shellcheck
+        uses: ludeeus/action-shellcheck@1.1.0
+        with:
+          additional_files: "3proxy-install.sh"
+        env:
+          SHELLCHECK_OPTS: -e SC1091,SC1117,SC2001,SC2034
+
+  # shellcheck2:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install ShellCheck
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y shellcheck
+  #     - name: Run ShellCheck explicitly
+  #       run: |
+  #         shellcheck -e SC1091,SC1117,SC2001,SC2034 3proxy-install.sh tests/3proxy-install-test.sh
 
   shfmt:
     runs-on: ubuntu-latest
