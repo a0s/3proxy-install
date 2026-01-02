@@ -42,6 +42,16 @@ Run the script again to add or remove users!
 
 Contributions are welcome! Here's how you can help:
 
+### Setup development environment
+
+After cloning the repository, configure git to use pre-commit hooks:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This will enable automatic code quality checks that run [shellcheck](https://github.com/koalaman/shellcheck) and [shfmt](https://github.com/mvdan/sh) on your staged shell scripts before each commit.
+
 ### Discuss changes
 
 Please open an issue before submitting a PR if you want to discuss a change, especially if it's a big one.
