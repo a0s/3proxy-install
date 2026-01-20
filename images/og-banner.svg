@@ -1,0 +1,74 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2a5298;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099cc;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <g opacity="0.1">
+    <circle cx="200" cy="150" r="80" fill="white"/>
+    <circle cx="1000" cy="480" r="100" fill="white"/>
+    <circle cx="150" cy="500" r="60" fill="white"/>
+    <circle cx="1100" cy="130" r="70" fill="white"/>
+  </g>
+  
+  <g opacity="0.15">
+    <path d="M 0,200 Q 300,150 600,200 T 1200,200" stroke="white" stroke-width="2" fill="none"/>
+    <path d="M 0,430 Q 300,480 600,430 T 1200,430" stroke="white" stroke-width="2" fill="none"/>
+  </g>
+  
+  <g transform="translate(100, 200)">
+    <circle cx="0" cy="0" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="0" y1="0" x2="200" y2="50" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="200" cy="50" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="200" y1="50" x2="400" y2="0" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="400" cy="0" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="400" y1="0" x2="600" y2="50" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="600" cy="50" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+  </g>
+  
+  <g transform="translate(100, 350)">
+    <circle cx="0" cy="0" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="0" y1="0" x2="200" y2="-50" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="200" cy="-50" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="200" y1="-50" x2="400" y2="0" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="400" cy="0" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+    <line x1="400" y1="0" x2="600" y2="-50" stroke="url(#accentGradient)" stroke-width="3" opacity="0.6"/>
+    <circle cx="600" cy="-50" r="8" fill="url(#accentGradient)" filter="url(#glow)"/>
+  </g>
+  
+  <text x="600" y="270" font-family="Arial, sans-serif" font-size="140" font-weight="bold" fill="white" text-anchor="middle" opacity="0.95">
+    3proxy
+  </text>
+  
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="72" font-weight="300" fill="url(#accentGradient)" text-anchor="middle" opacity="0.9">
+    install
+  </text>
+  
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="36" fill="white" text-anchor="middle" opacity="0.8">
+    Easy proxy server setup for Linux
+  </text>
+  
+  <g transform="translate(600, 520)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="26" fill="white" text-anchor="middle" opacity="0.7">
+      HTTP • HTTPS • SOCKS4 • SOCKS5
+    </text>
+  </g>
+  
+  <rect x="50" y="50" width="1100" height="530" fill="none" stroke="white" stroke-width="2" opacity="0.1" rx="10"/>
+</svg>
