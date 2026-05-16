@@ -3,7 +3,9 @@
 # Secure 3proxy server installer
 # https://github.com/a0s/3proxy-install
 
-readonly PROXY3_SOURCE_URL="https://github.com/z3apa3a/3proxy/archive/refs/heads/master.tar.gz"
+readonly PROXY3_SOURCE_COMMIT="7c1bc48c853f99f2574deb61fb9347a5d3056ad0"
+readonly PROXY3_SOURCE_URL="https://github.com/z3apa3a/3proxy/archive/${PROXY3_SOURCE_COMMIT}.tar.gz"
+readonly PROXY3_SOURCE_DIR="3proxy-${PROXY3_SOURCE_COMMIT}"
 readonly DEFAULT_HTTP_PORT=3128
 readonly DEFAULT_SOCKS_PORT=1080
 readonly PROXY3_BINARY="/usr/local/bin/3proxy"
@@ -273,18 +275,18 @@ function install3proxy() {
 	echo "Installing build dependencies..."
 	if [[ ${OS} == 'ubuntu' ]] || [[ ${OS} == 'debian' ]]; then
 		apt-get update
-		installPackages apt-get install -y build-essential curl tar
+		installPackages apt-get install -y build-essential curl tar libssl-dev
 	elif [[ ${OS} == 'fedora' ]]; then
-		installPackages dnf install -y gcc make curl tar
+		installPackages dnf install -y gcc make curl tar openssl-devel
 	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-		installPackages yum install -y gcc make curl tar
+		installPackages yum install -y gcc make curl tar openssl-devel
 	elif [[ ${OS} == 'oracle' ]]; then
-		installPackages yum install -y gcc make curl tar
+		installPackages yum install -y gcc make curl tar openssl-devel
 	elif [[ ${OS} == 'arch' ]]; then
-		installPackages pacman -S --needed --noconfirm base-devel curl tar
+		installPackages pacman -S --needed --noconfirm base-devel curl tar openssl
 	elif [[ ${OS} == 'alpine' ]]; then
 		apk update
-		installPackages apk add gcc make curl tar
+		installPackages apk add gcc make curl tar openssl-dev
 	fi
 
 	echo ""
@@ -302,7 +304,7 @@ function install3proxy() {
 	fi
 
 	echo "Building 3proxy..."
-	cd 3proxy-master || exit 1
+	cd "${PROXY3_SOURCE_DIR}" || exit 1
 	if ! ln -sf Makefile.Linux Makefile; then
 		echo -e "${RED}Failed to create Makefile symlink.${NC}"
 		exit 1
@@ -321,7 +323,7 @@ function install3proxy() {
 
 	echo "Cleaning up build files..."
 	cd /tmp || exit 1
-	rm -rf 3proxy.tar.gz 3proxy-master
+	rm -rf 3proxy.tar.gz "${PROXY3_SOURCE_DIR}"
 
 	echo "Creating 3proxy configuration directory..."
 	mkdir -p "${PROXY3_CONFIG_DIR}"
