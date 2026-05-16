@@ -23,10 +23,12 @@ Supported distributions (installer OS). 3proxy is built from upstream commit [7c
 - [x] Fedora 43 (tested in Docker)
 - [x] CentOS Stream 9 (tested in Docker, image `quay.io/centos/centos:stream9`)
 - [x] CentOS Stream 10 (tested in Docker, image `quay.io/centos/centos:stream10`)
+- [x] Debian 11 (bullseye, tested in Docker)
+- [x] Debian 12 (bookworm, tested in Docker)
+- [x] Debian 13 (trixie, tested in Docker)
 - [ ] AlmaLinux >= 8 (not tested yet)
 - [ ] Alpine Linux (not tested yet)
 - [ ] Arch Linux (not tested yet)
-- [ ] Debian >= 10 (not tested yet)
 - [ ] Oracle Linux (not tested yet)
 - [ ] Rocky Linux >= 8 (not tested yet)
 
@@ -68,7 +70,7 @@ We use [shellcheck](https://github.com/koalaman/shellcheck) and [shfmt](https://
 
 ## Testing
 
-Docker (Ubuntu 18.04–26.04, Fedora 42/43, CentOS Stream 9/10): `./tests/docker/run.sh` — needs Docker. One distro: `./tests/docker/run.sh --dist ubuntu-24.04`. On a real Ubuntu host: `sudo ./tests/3proxy-install-test.sh`.
+Docker (Ubuntu 18.04–26.04, Debian 11–13, Fedora 42/43, CentOS Stream 9/10): `./tests/docker/run.sh` — needs Docker. One distro: `./tests/docker/run.sh --dist debian-12`. On a real Ubuntu host: `sudo ./tests/3proxy-install-test.sh`.
 
 ## Credits & Licence
 
