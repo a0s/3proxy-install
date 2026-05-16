@@ -461,7 +461,10 @@ function newClient() {
 	until [[ ${CLIENT_NAME} =~ ^[a-zA-Z0-9_-]+$ && ${CLIENT_EXISTS} == '0' ]]; do
 		read -rp "Client name: " -e CLIENT_NAME
 		if [ -f "${PROXY3_CONFIG}.users" ]; then
-			CLIENT_EXISTS=$(grep -c "^users ${CLIENT_NAME}:" "${PROXY3_CONFIG}.users" || echo 0)
+			# grep -c prints 0 and exits 1 when there are no matches; do not use "|| echo 0"
+			# inside $() — that yields "0\n0" and breaks the duplicate-name check.
+			CLIENT_EXISTS=$(grep -c "^users ${CLIENT_NAME}:" "${PROXY3_CONFIG}.users" 2>/dev/null || true)
+			CLIENT_EXISTS=${CLIENT_EXISTS:-0}
 		else
 			CLIENT_EXISTS=0
 		fi
@@ -541,7 +544,8 @@ function listClients() {
 		exit 1
 	fi
 
-	NUMBER_OF_CLIENTS=$(grep -c "^users " "${PROXY3_CONFIG}.users" || echo 0)
+	NUMBER_OF_CLIENTS=$(grep -c "^users " "${PROXY3_CONFIG}.users" 2>/dev/null || true)
+	NUMBER_OF_CLIENTS=${NUMBER_OF_CLIENTS:-0}
 	if [[ ${NUMBER_OF_CLIENTS} -eq 0 ]]; then
 		echo ""
 		echo "You have no existing clients!"
@@ -556,7 +560,8 @@ function listClients() {
 function removeClient() {
 	listClients
 
-	NUMBER_OF_CLIENTS=$(grep -c "^users " "${PROXY3_CONFIG}.users" || echo 0)
+	NUMBER_OF_CLIENTS=$(grep -c "^users " "${PROXY3_CONFIG}.users" 2>/dev/null || true)
+	NUMBER_OF_CLIENTS=${NUMBER_OF_CLIENTS:-0}
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		exit 1
 	fi
