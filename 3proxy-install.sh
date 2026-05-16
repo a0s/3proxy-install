@@ -27,19 +27,25 @@ function isRoot() {
 }
 
 function checkVirt() {
+	local VIRT=""
 	if command -v virt-what &>/dev/null; then
 		VIRT=$(virt-what)
-	else
-		VIRT=$(systemd-detect-virt)
+	elif command -v systemd-detect-virt &>/dev/null; then
+		VIRT=$(systemd-detect-virt 2>/dev/null || true)
 	fi
-	if [[ ${VIRT} == "openvz" ]]; then
+	case "${VIRT}" in
+	"" | none | docker | container | podman | wsl | kvm | qemu | xen | microsoft | vmware | oracle | amazon | google | ibm | bhyve | vz | parallels | uml | systemd-nspawn)
+		return 0
+		;;
+	openvz)
 		echo "OpenVZ is not supported"
 		exit 1
-	fi
-	if [[ ${VIRT} == "lxc" ]]; then
+		;;
+	lxc)
 		echo "LXC is not supported (yet)."
 		exit 1
-	fi
+		;;
+	esac
 }
 
 function checkIptables() {
@@ -72,7 +78,7 @@ function checkOS() {
 		fi
 	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
 		if [[ ${VERSION_ID} == 7* ]]; then
-			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS Stream 8 or later"
 			exit 1
 		fi
 	elif [[ -e /etc/oracle-release ]]; then
@@ -276,12 +282,12 @@ function install3proxy() {
 	if [[ ${OS} == 'ubuntu' ]] || [[ ${OS} == 'debian' ]]; then
 		apt-get update
 		installPackages apt-get install -y build-essential curl tar libssl-dev
-	elif [[ ${OS} == 'fedora' ]]; then
-		installPackages dnf install -y gcc make curl tar openssl-devel
-	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-		installPackages yum install -y gcc make curl tar openssl-devel
-	elif [[ ${OS} == 'oracle' ]]; then
-		installPackages yum install -y gcc make curl tar openssl-devel
+	elif [[ ${OS} == 'fedora' ]] || [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]] || [[ ${OS} == 'oracle' ]]; then
+		local -a rhel_build_deps=(gcc make tar openssl openssl-devel)
+		if ! command -v curl &>/dev/null; then
+			rhel_build_deps+=(curl)
+		fi
+		installPackages dnf install -y "${rhel_build_deps[@]}"
 	elif [[ ${OS} == 'arch' ]]; then
 		installPackages pacman -S --needed --noconfirm base-devel curl tar openssl
 	elif [[ ${OS} == 'alpine' ]]; then
@@ -332,6 +338,7 @@ function install3proxy() {
 	generateConfig
 
 	echo "Creating systemd service..."
+	mkdir -p "$(dirname "${PROXY3_SERVICE}")"
 	generateService
 
 	echo "Enabling and starting 3proxy service..."
