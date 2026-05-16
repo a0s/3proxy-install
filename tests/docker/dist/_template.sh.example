@@ -1,0 +1,8 @@
+#!/bin/bash
+# Copy to my-distro-X.Y.sh and adjust DIST_SLUG / DOCKER_IMAGE.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export DIST_SLUG="my-distro-1.0"
+export DOCKER_IMAGE="${DOCKER_IMAGE:-my/image:tag}"
+exec "${SCRIPT_DIR}/../lib/run-dist.sh" "$@"

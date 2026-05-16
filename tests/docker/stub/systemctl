@@ -1,0 +1,112 @@
+#!/bin/bash
+# Minimal systemctl stub for Docker-based installer tests.
+
+set -euo pipefail
+
+readonly STUB_STATE_DIR="/run/3proxy-test-stub"
+readonly STUB_ACTIVE_FILE="${STUB_STATE_DIR}/active"
+readonly STUB_PID_FILE="${STUB_STATE_DIR}/3proxy.pid"
+readonly PROXY3_BINARY="/usr/local/bin/3proxy"
+readonly PROXY3_CONFIG="/etc/3proxy/3proxy.cfg"
+
+mkdir -p "${STUB_STATE_DIR}"
+
+stub_is_active() {
+	[[ -f "${STUB_ACTIVE_FILE}" ]]
+}
+
+stub_start_proxy() {
+	if [[ ! -x "${PROXY3_BINARY}" ]] || [[ ! -f "${PROXY3_CONFIG}" ]]; then
+		return 0
+	fi
+
+	if [[ -f "${STUB_PID_FILE}" ]]; then
+		local old_pid
+		old_pid=$(<"${STUB_PID_FILE}")
+		if kill -0 "${old_pid}" 2>/dev/null; then
+			return 0
+		fi
+	fi
+
+	"${PROXY3_BINARY}" "${PROXY3_CONFIG}" &>/dev/null &
+	echo $! >"${STUB_PID_FILE}"
+}
+
+stub_stop_proxy() {
+	if [[ -f "${STUB_PID_FILE}" ]]; then
+		local pid
+		pid=$(<"${STUB_PID_FILE}")
+		kill "${pid}" 2>/dev/null || true
+		rm -f "${STUB_PID_FILE}"
+	fi
+	pkill -x 3proxy 2>/dev/null || true
+}
+
+stub_mark_active() {
+	touch "${STUB_ACTIVE_FILE}"
+	stub_start_proxy
+}
+
+stub_mark_inactive() {
+	rm -f "${STUB_ACTIVE_FILE}"
+	stub_stop_proxy
+}
+
+cmd="${1:-}"
+shift || true
+
+# Drop --quiet and unit name arguments for action parsing.
+args=()
+unit_seen=false
+for arg in "$@"; do
+	case "${arg}" in
+	--quiet | --no-pager)
+		continue
+		;;
+	3proxy | 3proxy.service)
+		unit_seen=true
+		continue
+		;;
+	esac
+	if [[ "${unit_seen}" == "false" && "${arg}" == *.* ]]; then
+		continue
+	fi
+	args+=("${arg}")
+done
+
+case "${cmd}" in
+daemon-reload | enable | disable)
+	exit 0
+	;;
+start)
+	stub_mark_active
+	exit 0
+	;;
+restart)
+	stub_stop_proxy
+	stub_mark_active
+	exit 0
+	;;
+stop)
+	stub_mark_inactive
+	exit 0
+	;;
+is-active)
+	if stub_is_active; then
+		exit 0
+	fi
+	exit 3
+	;;
+status)
+	if stub_is_active; then
+		echo "3proxy: active (stub)"
+		exit 0
+	fi
+	echo "3proxy: inactive (stub)"
+	exit 3
+	;;
+*)
+	echo "systemctl stub: unsupported command: ${cmd}" >&2
+	exit 1
+	;;
+esac

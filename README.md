@@ -12,9 +12,13 @@ Please check the [issues](https://github.com/a0s/3proxy-install/issues) for ongo
 
 ## Requirements
 
-Supported distributions:
+Supported distributions (installer OS). 3proxy is built from upstream commit [7c1bc48](https://github.com/z3apa3a/3proxy/commit/7c1bc48c853f99f2574deb61fb9347a5d3056ad0) (`PROXY3_SOURCE_COMMIT` in `3proxy-install.sh`).
 
-- [x] Ubuntu >= 18.04
+- [x] Ubuntu 18.04 (tested in Docker)
+- [x] Ubuntu 20.04 (tested in Docker)
+- [x] Ubuntu 22.04 (tested in Docker)
+- [x] Ubuntu 24.04 (tested in Docker)
+- [x] Ubuntu 26.04 (tested in Docker)
 - [ ] AlmaLinux >= 8 (not tested yet)
 - [ ] Alpine Linux (not tested yet)
 - [ ] Arch Linux (not tested yet)
@@ -59,6 +63,10 @@ Please open an issue before submitting a PR if you want to discuss a change, esp
 ### Code formatting
 
 We use [shellcheck](https://github.com/koalaman/shellcheck) and [shfmt](https://github.com/mvdan/sh) to enforce bash styling guidelines and good practices. They are executed for each commit / PR with GitHub Actions, so you can check the [lint workflow configuration](https://github.com/a0s/3proxy-install/blob/master/.github/workflows/lint.yml).
+
+## Testing
+
+Docker (Ubuntu 18.04–26.04): `./tests/docker/run.sh` — needs Docker. One distro: `./tests/docker/run.sh --dist ubuntu-24.04`. On a real Ubuntu host: `sudo ./tests/3proxy-install-test.sh`.
 
 ## Credits & Licence
 
